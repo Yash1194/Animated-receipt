@@ -31,6 +31,7 @@ export default function App() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [autoPrintCount, setAutoPrintCount] = useState(0);
+  const [activeMobileTab, setActiveMobileTab] = useState('printer'); // 'printer' | 'controls'
 
   // Trigger automated print sequence
   const handleTriggerPrint = () => {
@@ -65,7 +66,6 @@ export default function App() {
   // Global Keyboard Shortcuts Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Don't trigger hotkeys if typing inside input / textarea
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
         return;
       }
@@ -73,8 +73,6 @@ export default function App() {
       if (e.code === 'Space') {
         e.preventDefault();
         handleTriggerPrint();
-      } else if (e.key === 't' || e.key === 'T') {
-        // Tear triggerhandled via keyboard shortcut dispatch
       } else if (e.key === 'm' || e.key === 'M') {
         const next = !getMuted();
         setMuted(next);
@@ -87,10 +85,10 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground relative">
-      {/* Dynamic Background Glow Orbs */}
-      <div className="fixed top-1/4 left-1/3 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" />
-      <div className="fixed bottom-10 right-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse-glow" />
+    <div className="min-h-screen flex flex-col bg-background text-foreground relative selection:bg-amber-500 selection:text-background">
+      {/* Background Ambient Glows */}
+      <div className="fixed top-1/4 left-1/3 w-80 sm:w-96 h-80 sm:h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" />
+      <div className="fixed bottom-10 right-10 w-80 sm:w-96 h-80 sm:h-96 bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse-glow" />
 
       {/* Main Navbar */}
       <Navbar
@@ -102,13 +100,15 @@ export default function App() {
         selectedSkin={paperSkin}
         setSelectedSkin={setPaperSkin}
         PAPER_SKINS={PAPER_SKINS}
+        activeMobileTab={activeMobileTab}
+        setActiveMobileTab={setActiveMobileTab}
       />
 
-      {/* Workspace Grid Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10">
+      {/* Main Studio Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start relative z-10">
         
-        {/* Left Column: 3D Thermal Printer Canvas (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col items-center justify-center w-full">
+        {/* Printer Canvas Column */}
+        <div className={`lg:col-span-7 flex flex-col items-center justify-center w-full ${activeMobileTab === 'printer' ? 'block' : 'hidden lg:block'}`}>
           <ThermalPrinter
             receiptData={receiptData}
             paperSkin={paperSkin}
@@ -119,8 +119,8 @@ export default function App() {
           />
         </div>
 
-        {/* Right Column: POS Control Studio (5 cols) */}
-        <div className="lg:col-span-5 w-full h-full">
+        {/* POS Studio Control Panel Column */}
+        <div className={`lg:col-span-5 w-full h-full ${activeMobileTab === 'controls' ? 'block' : 'hidden lg:block'}`}>
           <ControlPanel
             receiptData={receiptData}
             setReceiptData={setReceiptData}
