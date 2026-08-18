@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: oklch(0.12 0.02 260);
+    --foreground: oklch(0.96 0.01 260);
+    --card: oklch(0.16 0.02 260 / 0.85);
+    --card-foreground: oklch(0.96 0.01 260);
+    --popover: oklch(0.16 0.02 260);
+    --popover-foreground: oklch(0.96 0.01 260);
+    --primary: oklch(0.78 0.16 85);
+    --primary-foreground: oklch(0.12 0.02 260);
+    --secondary: oklch(0.22 0.03 260);
+    --secondary-foreground: oklch(0.90 0.02 260);
+    --muted: oklch(0.20 0.02 260);
+    --muted-foreground: oklch(0.68 0.02 260);
+    --accent: oklch(0.70 0.18 160);
+    --accent-foreground: oklch(0.10 0.02 260);
+    --destructive: oklch(0.60 0.20 25);
+    --destructive-foreground: oklch(0.98 0 0);
+    --border: rgba(255, 255, 255, 0.08);
+    --input: rgba(255, 255, 255, 0.12);
+    --ring: oklch(0.78 0.16 85);
+    --radius: 0.75rem;
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-heading: 'Outfit', 'Space Grotesk', sans-serif;
+  }
+
+  .dark {
+    --background: oklch(0.10 0.02 260);
+    --foreground: oklch(0.98 0.01 260);
+    --card: oklch(0.15 0.02 260 / 0.9);
+    --card-foreground: oklch(0.98 0.01 260);
+    --primary: oklch(0.80 0.18 85);
+    --primary-foreground: oklch(0.10 0.02 260);
+    --border: rgba(255, 255, 255, 0.1);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Thermal Paper Skins */
+.paper-skin-classic {
+  background-color: #f7f5ed;
+  color: #1a1918;
+}
+
+.paper-skin-cyber {
+  background-color: #0e0f17;
+  color: #00ffcc;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.15);
+}
+
+.paper-skin-blueprint {
+  background-color: #0f2847;
+  color: #e0f2fe;
+}
+
+.paper-skin-vintage {
+  background-color: #f1e4c3;
+  color: #4a3419;
+}
+
+.paper-skin-gold {
+  background-color: #1f1b13;
+  color: #f7d070;
+  border: 1px solid #785a21;
+}
+
+/* Thermal Paper Jagged ZigZag Edge */
+.receipt-zigzag-bottom::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background-image: linear-gradient(135deg, currentColor 50%, transparent 50%),
+                    linear-gradient(45deg, transparent 50%, currentColor 50%);
+  background-size: 10px 10px;
+  background-repeat: repeat-x;
+  opacity: 0.15;
+}
+
+/* Custom animations & keyframes */
+@keyframes thermalScan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+.animate-thermal-scan {
+  animation: thermalScan 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; filter: blur(8px); }
+  50% { opacity: 0.8; filter: blur(14px); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Glassmorphism utility */
+.glass-panel {
+  background: rgba(22, 25, 33, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
