@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
+import DashboardStats from './components/DashboardStats';
+import RevenueChartWidget from './components/RevenueChartWidget';
 import ThermalPrinter from './components/ThermalPrinter';
 import ControlPanel from './components/ControlPanel';
 import ReceiptHistory from './components/ReceiptHistory';
@@ -31,7 +34,7 @@ export default function App() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [autoPrintCount, setAutoPrintCount] = useState(0);
-  const [activeMobileTab, setActiveMobileTab] = useState('printer'); // 'printer' | 'controls'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'printer' | 'pos' | 'history' | 'skins'
 
   // Trigger automated print sequence
   const handleTriggerPrint = () => {
@@ -85,57 +88,67 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground relative selection:bg-amber-500 selection:text-background">
-      {/* Background Ambient Glows */}
-      <div className="fixed top-1/4 left-1/3 w-80 sm:w-96 h-80 sm:h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" />
-      <div className="fixed bottom-10 right-10 w-80 sm:w-96 h-80 sm:h-96 bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse-glow" />
-
-      {/* Main Navbar */}
-      <Navbar
-        isMuted={isMuted}
-        setIsMuted={setIsMuted}
-        onOpenHistory={() => setIsHistoryOpen(true)}
+    <div className="min-h-screen flex bg-background text-foreground selection:bg-lime-400 selection:text-lime-950">
+      {/* Left Navigation Sidebar */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         historyCount={history.length}
-        onOpenHelp={() => setIsHelpOpen(true)}
-        selectedSkin={paperSkin}
-        setSelectedSkin={setPaperSkin}
-        PAPER_SKINS={PAPER_SKINS}
-        activeMobileTab={activeMobileTab}
-        setActiveMobileTab={setActiveMobileTab}
       />
 
-      {/* Main Studio Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start relative z-10">
-        
-        {/* Printer Canvas Column */}
-        <div className={`lg:col-span-7 flex flex-col items-center justify-center w-full ${activeMobileTab === 'printer' ? 'block' : 'hidden lg:block'}`}>
-          <ThermalPrinter
-            receiptData={receiptData}
-            paperSkin={paperSkin}
-            printSpeed={printSpeed}
-            customStamp={customStamp}
-            onReceiptTorn={handleReceiptTorn}
-            autoPrintCount={autoPrintCount}
-          />
-        </div>
+      {/* Main Workspace Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <Navbar
+          isMuted={isMuted}
+          setIsMuted={setIsMuted}
+          onOpenHistory={() => setIsHistoryOpen(true)}
+          historyCount={history.length}
+          onOpenHelp={() => setIsHelpOpen(true)}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
 
-        {/* POS Studio Control Panel Column */}
-        <div className={`lg:col-span-5 w-full h-full ${activeMobileTab === 'controls' ? 'block' : 'hidden lg:block'}`}>
-          <ControlPanel
-            receiptData={receiptData}
-            setReceiptData={setReceiptData}
-            paperSkin={paperSkin}
-            setPaperSkin={setPaperSkin}
-            customStamp={customStamp}
-            setCustomStamp={setCustomStamp}
-            printSpeed={printSpeed}
-            setPrintSpeed={setPrintSpeed}
-            onTriggerPrint={handleTriggerPrint}
-          />
-        </div>
-      </main>
+        {/* Dashboard Content Container */}
+        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8">
+          
+          {/* Top Row: Financial & Receipt Metrics */}
+          <DashboardStats historyCount={history.length} />
 
-      {/* History Drawer */}
+          {/* Main Grid: 3D Thermal Printer & Analytics vs POS Studio */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Left Column: 3D Thermal Printer Canvas + Cashflow Chart */}
+            <div className={`lg:col-span-6 space-y-6 ${activeTab === 'pos' ? 'hidden lg:block' : 'block'}`}>
+              <ThermalPrinter
+                receiptData={receiptData}
+                paperSkin={paperSkin}
+                printSpeed={printSpeed}
+                customStamp={customStamp}
+                onReceiptTorn={handleReceiptTorn}
+                autoPrintCount={autoPrintCount}
+              />
+              <RevenueChartWidget />
+            </div>
+
+            {/* Right Column: POS Customizer & Preset Studio */}
+            <div className={`lg:col-span-6 h-full ${activeTab === 'printer' ? 'hidden lg:block' : 'block'}`}>
+              <ControlPanel
+                receiptData={receiptData}
+                setReceiptData={setReceiptData}
+                paperSkin={paperSkin}
+                setPaperSkin={setPaperSkin}
+                customStamp={customStamp}
+                setCustomStamp={setCustomStamp}
+                printSpeed={printSpeed}
+                setPrintSpeed={setPrintSpeed}
+                onTriggerPrint={handleTriggerPrint}
+              />
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* History Log Drawer */}
       <ReceiptHistory
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}

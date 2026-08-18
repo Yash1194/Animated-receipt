@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, VolumeX, Printer, History, HelpCircle, Palette, Monitor, Sliders } from 'lucide-react';
+import { Volume2, VolumeX, Search, Bell, HelpCircle, History, Sparkles, Printer, Sliders } from 'lucide-react';
 import { getMuted, setMuted, playButtonClick } from '../utils/audio';
 
 export default function Navbar({
@@ -8,11 +8,8 @@ export default function Navbar({
   onOpenHistory,
   historyCount,
   onOpenHelp,
-  selectedSkin,
-  setSelectedSkin,
-  PAPER_SKINS,
-  activeMobileTab,
-  setActiveMobileTab
+  activeTab,
+  setActiveTab
 }) {
   const toggleAudio = () => {
     playButtonClick();
@@ -22,36 +19,48 @@ export default function Navbar({
   };
 
   return (
-    <header className="w-full border-b border-border bg-card/80 backdrop-blur-xl sticky top-0 z-40 px-3 sm:px-6 py-3 flex items-center justify-between shadow-sm">
-      {/* Brand Title */}
-      <div className="flex items-center gap-2.5">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 shadow-md shadow-amber-500/10 flex-shrink-0">
-          <div className="w-full h-full bg-background rounded-[10px] flex items-center justify-center">
-            <Printer className="w-4.5 h-4.5 text-amber-400" />
+    <header className="w-full bg-card border-b border-border sticky top-0 z-40 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
+      {/* Title & Mobile Brand */}
+      <div className="flex items-center gap-4">
+        <div className="xl:hidden flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-lime-500 text-lime-950 flex items-center justify-center font-bold text-sm shadow-md">
+            🧾
           </div>
+          <span className="font-bold text-base font-heading text-foreground">
+            THERMO<span className="text-lime-600">POS</span>
+          </span>
         </div>
-        <div>
-          <div className="flex items-center gap-1.5">
-            <h1 className="font-bold text-base sm:text-lg font-heading tracking-tight text-foreground">
-              ThermoPhysics <span className="text-amber-400 font-mono text-xs font-semibold">3D</span>
-            </h1>
-          </div>
-          <p className="text-[11px] text-muted-foreground hidden md:block">
-            Real-time Thermal Billing Motor & Physics Studio
+
+        <div className="hidden xl:block">
+          <h2 className="font-bold text-xl font-heading tracking-tight text-foreground">
+            {activeTab === 'dashboard' ? 'Billing Dashboard' : activeTab === 'printer' ? '3D Thermal Printer' : activeTab === 'pos' ? 'POS Studio' : 'Transactions & Logs'}
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Real-time motor feed & thermal billing physics engine
           </p>
         </div>
       </div>
 
-      {/* Center Segment Controller for Mobile View Switch */}
-      <div className="flex lg:hidden bg-secondary/80 rounded-xl p-1 border border-border text-xs font-medium">
+      {/* Search Input Bar */}
+      <div className="hidden md:flex items-center gap-2 bg-secondary/60 rounded-2xl px-3.5 py-1.5 border border-border w-64 focus-within:border-lime-500 transition-all">
+        <Search className="w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          placeholder="Search transactions..."
+          className="bg-transparent text-xs text-foreground placeholder:text-muted-foreground focus:outline-none w-full"
+        />
+      </div>
+
+      {/* Mobile Tab Segment Control */}
+      <div className="flex xl:hidden bg-secondary/80 rounded-xl p-1 border border-border text-xs font-semibold">
         <button
           onClick={() => {
             playButtonClick();
-            setActiveMobileTab('printer');
+            setActiveTab('printer');
           }}
           className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
-            activeMobileTab === 'printer'
-              ? 'bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30'
+            activeTab === 'printer'
+              ? 'bg-lime-400 text-lime-950 font-bold shadow-sm'
               : 'text-muted-foreground'
           }`}
         >
@@ -61,11 +70,11 @@ export default function Navbar({
         <button
           onClick={() => {
             playButtonClick();
-            setActiveMobileTab('controls');
+            setActiveTab('pos');
           }}
           className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
-            activeMobileTab === 'controls'
-              ? 'bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30'
+            activeTab === 'pos'
+              ? 'bg-lime-400 text-lime-950 font-bold shadow-sm'
               : 'text-muted-foreground'
           }`}
         >
@@ -74,70 +83,59 @@ export default function Navbar({
         </button>
       </div>
 
-      {/* Desktop Quick Actions */}
-      <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* Paper Skin Selector Dropdown / Pills */}
-        <div className="hidden xl:flex items-center bg-secondary/60 rounded-xl p-1 border border-border text-xs">
-          <Palette className="w-3.5 h-3.5 text-muted-foreground ml-2 mr-1.5" />
-          {PAPER_SKINS.map((skin) => (
-            <button
-              key={skin.id}
-              onClick={() => {
-                playButtonClick();
-                setSelectedSkin(skin.id);
-              }}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
-                selectedSkin === skin.id
-                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {skin.name.split(' ')[0]}
-            </button>
-          ))}
-        </div>
-
-        {/* History Log Button */}
+      {/* User Avatar & Audio Actions */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* History Quick Trigger */}
         <button
           onClick={() => {
             playButtonClick();
             onOpenHistory();
           }}
-          className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary/80 hover:bg-secondary text-foreground text-xs font-semibold border border-border transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="relative flex items-center gap-1.5 px-3 py-2 rounded-xl bg-secondary/80 hover:bg-secondary text-foreground text-xs font-semibold border border-border transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          <History className="w-3.5 h-3.5 text-amber-400" />
-          <span className="hidden sm:inline">History</span>
+          <History className="w-4 h-4 text-lime-600" />
+          <span className="hidden sm:inline">Log</span>
           {historyCount > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-background font-mono font-bold text-[10px]">
+            <span className="px-1.5 py-0.2 rounded-full bg-lime-500 text-lime-950 font-mono font-bold text-[10px]">
               {historyCount}
             </span>
           )}
         </button>
 
-        {/* Mute Toggle */}
+        {/* Audio Mute Switch */}
         <button
           onClick={toggleAudio}
           className={`p-2 rounded-xl border transition-all ${
             isMuted
               ? 'bg-secondary/40 text-muted-foreground border-border'
-              : 'bg-amber-500/10 text-amber-400 border-amber-500/30 shadow-md shadow-amber-500/10'
+              : 'bg-lime-500/15 text-lime-700 border-lime-500/30 shadow-md shadow-lime-500/10'
           }`}
-          title={isMuted ? 'Unmute Sound Synthesis' : 'Mute Sound Synthesis'}
+          title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
         >
           {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
         </button>
 
-        {/* Hotkey Help Dialog */}
+        {/* Help Modal */}
         <button
           onClick={() => {
             playButtonClick();
             onOpenHelp();
           }}
           className="p-2 rounded-xl bg-secondary/60 text-muted-foreground hover:text-foreground border border-border hover:bg-secondary transition-all"
-          title="Keyboard Shortcuts"
         >
           <HelpCircle className="w-4 h-4" />
         </button>
+
+        {/* User Profile Badge */}
+        <div className="hidden sm:flex items-center gap-2.5 pl-2 border-l border-border">
+          <div className="w-8 h-8 rounded-full bg-lime-600 text-white font-bold flex items-center justify-center text-xs shadow-md">
+            Y
+          </div>
+          <div className="text-left leading-tight hidden lg:block">
+            <span className="font-bold text-xs text-foreground block">Yash Swarnkar</span>
+            <span className="text-[10px] text-muted-foreground font-medium">Store Admin</span>
+          </div>
+        </div>
       </div>
     </header>
   );
