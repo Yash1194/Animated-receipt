@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
-import DashboardStats from './components/DashboardStats';
-import RevenueChartWidget from './components/RevenueChartWidget';
 import ThermalPrinter from './components/ThermalPrinter';
 import ControlPanel from './components/ControlPanel';
 import ReceiptHistory from './components/ReceiptHistory';
 import KeyboardShortcutsModal from './components/KeyboardShortcutsModal';
 import { RECEIPT_PRESETS, PAPER_SKINS } from './data/templates';
-import { getMuted, setMuted, playButtonClick } from './utils/audio';
+import { getMuted, setMuted } from './utils/audio';
 
 export default function App() {
   // Default receipt data loaded from preset 0 (Neo-Tokyo Cafe)
@@ -111,14 +109,11 @@ export default function App() {
         {/* Dashboard Content Container */}
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 md:p-8">
           
-          {/* Top Row: Financial & Receipt Metrics */}
-          <DashboardStats historyCount={history.length} />
-
-          {/* Main Grid: 3D Thermal Printer & Analytics vs POS Studio */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Main Grid: 3D Thermal Printer vs POS Studio Controls */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
             
-            {/* Left Column: 3D Thermal Printer Canvas + Cashflow Chart */}
-            <div className={`lg:col-span-6 space-y-6 ${activeTab === 'pos' ? 'hidden lg:block' : 'block'}`}>
+            {/* Left Column: 3D Thermal Printer Canvas */}
+            <div className={`lg:col-span-6 flex flex-col items-center justify-center w-full ${activeTab === 'pos' ? 'hidden lg:block' : 'block'}`}>
               <ThermalPrinter
                 receiptData={receiptData}
                 paperSkin={paperSkin}
@@ -127,7 +122,6 @@ export default function App() {
                 onReceiptTorn={handleReceiptTorn}
                 autoPrintCount={autoPrintCount}
               />
-              <RevenueChartWidget />
             </div>
 
             {/* Right Column: POS Customizer & Preset Studio */}
