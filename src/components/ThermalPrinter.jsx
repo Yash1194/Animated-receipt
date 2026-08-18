@@ -21,14 +21,21 @@ export default function ThermalPrinter({
   autoPrintCount
 }) {
   const [isPrinting, setIsPrinting] = useState(false);
-  const [printProgress, setPrintProgress] = useState(-100);
-  const [isStamped, setIsStamped] = useState(false);
+  // Initial state on reload: Receipt is ready at position 0, no auto-print animation on reload
+  const [printProgress, setPrintProgress] = useState(0);
+  const [isStamped, setIsStamped] = useState(true);
   const [isTorn, setIsTorn] = useState(false);
-  const [status, setStatus] = useState({ title: 'Thermal Printer Ready', subtitle: 'Motor Standby • 100% Roll', icon: '⚡', color: 'text-lime-600 bg-lime-50 border-lime-200' });
+  const [status, setStatus] = useState({
+    title: 'Thermal Printer Standby',
+    subtitle: 'Click "Re-print" or "Print Feed" to start motor',
+    icon: '⚡',
+    color: 'text-lime-600 bg-lime-50 border-lime-200'
+  });
   const [rollRotation, setRollRotation] = useState(0);
 
   const paperRef = useRef(null);
   const viewportRef = useRef(null);
+  const isFirstMount = useRef(true);
 
   // Print steps percentage positions
   const printSteps = [
@@ -40,7 +47,7 @@ export default function ThermalPrinter({
     { y: 0, stamp: true, pause: 200 }
   ];
 
-  // Start sequential print animation
+  // Start sequential print animation ONLY when explicitly triggered
   const startPrint = () => {
     if (isPrinting) return;
     setIsPrinting(true);
@@ -126,8 +133,12 @@ export default function ThermalPrinter({
     }
   };
 
-  // Auto trigger print on template switch
+  // Skip auto-print on page load/reload! Only print when user clicks print.
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
     startPrint();
   }, [autoPrintCount]);
 
